@@ -1,0 +1,38 @@
+is sounds like a kata. Well you could brute force this problem, building all combinations from the choices that total the sum. More likely, there is a solid mathematical approach to this that won’t take all that.
+
+It’s too late in the evening for me to make a good approach, so here’s this instead:
+
+from random import choice
+import time
+
+def MC_combinations(numb, choices, tolerance=5, timeout=0.5):
+    """ A very silly and impractical function to find "all" the ways selections from
+       a numerical list (choices) can be summed together to reach numb """
+    if numb < 1 or len([x for x in choices if x < 1]):
+        return 'Positive Values for numb and choices only'
+    result = []
+    tries_limit = tolerance * 200
+    stop_time = time.perf_counter() + timeout
+    while time.perf_counter() < stop_time:
+        r = []
+        tries = 0
+        catch = 0
+        brk = False
+        while sum(r) != numb:
+            if tries > tries_limit:
+                brk = not brk
+                break
+            elif catch == len(choices) + tolerance:
+                r = r[:-2]
+                catch = 0
+            elif sum(r) < numb: r.append(choice(choices))
+            elif sum(r) > numb:
+                r.pop()
+                tries += 1
+                catch += 1
+        if not brk:
+            r.sort()
+            if r not in result: result.append(r)
+    result.sort()
+    print(f'{len(result)} ways {choices} can be used to total {numb}')
+    return result
